@@ -1,0 +1,6 @@
+# build files
+build/*
+!build/Makefile
+
+.vscode/
+upload.sh
