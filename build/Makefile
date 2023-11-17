@@ -43,7 +43,7 @@ LINKONLYOBJECTS =
 all: $(TARGET) $(PROJECT).hex $(PROJECT).eep $(PROJECT).lss
 
 ## Compile
-main.o: ../src/main.c
+%.o: ../src/%.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c $< -o $@
 
 ## Link
