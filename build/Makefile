@@ -36,7 +36,7 @@ LIBDIRS =
 INCLUDES = 
 
 ## Objects
-OBJECTS = main.o
+OBJECTS = main.o serial.o
 LINKONLYOBJECTS =
 
 ## Build
