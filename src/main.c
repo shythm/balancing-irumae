@@ -13,15 +13,15 @@ int main(void)
     serial_init();
     mpu6050_init();
     
-    uint16_t accel_x, accel_y, accel_z;
+    float accel_x, accel_y, accel_z;
 
     for (;;) 
     {
-        accel_x = mpu6050_read_accel_x();
-        accel_y = mpu6050_read_accel_y();
-        accel_z = mpu6050_read_accel_z();
+        accel_x = mpu6050_get_accel_x();
+        accel_y = mpu6050_get_accel_y();
+        accel_z = mpu6050_get_accel_z();
 
-        serial_printf("accel_x: %+6d, accel_y: %+6d, accel_z: %+6d\r", accel_x, accel_y, accel_z);
+        serial_printf("accel_x: %+2.4f, accel_y: %+2.4f, accel_z: %+2.4f\r\n", accel_x, accel_y, accel_z);
 
         _delay_ms(10);
     }

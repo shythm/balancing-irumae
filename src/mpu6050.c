@@ -1,3 +1,10 @@
+/**
+ * @file mpu6050.c
+ * @author Seongho Lee (shythm@outlook.com)
+ * @brief MPU6050 sensor driver
+ * @date 2023-11-18
+ */
+
 #include "mpu6050.h"
 #include "i2c.h"
 
@@ -8,6 +15,18 @@
 void mpu6050_init() {
     // init i2c
     i2c_init();
+
+    // AFS_SEL Full Scale Range LSB Sensitivity
+    i2c_start();
+    i2c_write(MPU6050_SLA_W);
+    i2c_write(MPU6050_REG_ACCEL_CONFIG);
+    i2c_write(MPU6050_AFS_SEL);
+
+    // FS_SEL Full Scale Range LSB Sensitivity
+    i2c_start();
+    i2c_write(MPU6050_SLA_W);
+    i2c_write(MPU6050_REG_GYRO_CONFIG);
+    i2c_write(MPU6050_FS_SEL);
 
     // Wake up the MPU6050 sensor
     i2c_start();
