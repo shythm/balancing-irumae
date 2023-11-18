@@ -36,7 +36,7 @@ LIBDIRS =
 INCLUDES = 
 
 ## Objects
-OBJECTS = main.o serial.o
+OBJECTS = main.o serial.o mpu6050.o
 LINKONLYOBJECTS =
 
 ## Build
