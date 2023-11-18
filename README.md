@@ -13,6 +13,19 @@ ATmega128을 이용한 이루매 밸런싱 인형 로봇
 
 ## Trial and Error
 
+- ATmega128에서 `vsprintf` 함수의 `%f` 출력 안되는 문제 발생 및 해결.
+
+  - 상황 및 문제
+    - `serial_printf` 함수에서 `%f` 서식문자를 지정하여 부동소수점을 출력하는데 `?` 문자로 제대로 표시되지 않는 문제가 발생함.
+  - 디버깅
+    - ATmega128은 FPU가 존재하지 않기에, 이에 대한 지원이 미흡하다고 판단함.
+    - 구글 검색을 통해 printf 서식 문자 `%f` 지원에 대해 알아봄.
+  - 해결
+    - 컴파일러와 링커에 서식 문자 지정 출력 함수에 대한 지원 flag를 추가하여 해결.
+    - `CFLAGS += -Wl,-u,vfprintf -lprintf_flt -lm`
+    - `LDFLAGS += -lm -lprintf_flt -Wl,-u,vfprintf`
+    - [Makefile](./build/Makefile) 참조.
+
 - MPU6050 레지스터를 읽고 나면 Start I2C Condition에서 블락되는 문제 발생 및 해결.
   - 상황 및 문제
     - 0x3B(ACCEL_XOUT_H) 레지스터를 지정하고 이후 6바이트를 연속적으로 읽는 코드를 작성함.

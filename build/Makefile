@@ -17,11 +17,13 @@ COMMON = -mmcu=$(MCU)
 ## -fpack-struct: Pack structure members together without holes(data structure alignment)
 CFLAGS = $(COMMON)
 CFLAGS += -Wall -std=gnu99 -Os -fpack-struct
+## For print float
+CFLAGS += -Wl,-u,vfprintf -lprintf_flt -lm
 
 ## Linker flags
 ## -Wl, -Map: Create a link map
 LDFLAGS = $(COMMON)
-LDFLAGS += -Wl,-Map=$(PROJECT).map
+LDFLAGS += -Wl,-u,vfprintf,-Map=$(PROJECT).map
 
 ## Intel Hex file production flags
 HEX_FLASH_FLAGS = -R .eeprom -R .fuse -R .lock -R .signature
