@@ -1,19 +1,28 @@
+#define F_CPU    16000000UL
+#define __DELAY_BACKWARD_COMPATIBLE__
+
 #include <avr/io.h>
 #include <avr/iom128.h>
+#include <util/delay.h>
 
 #include "serial.h"
-
-int main(void) {
+#include "mpu6050.h"
+ 
+int main(void)
+{
     serial_init();
-
-    DDRA = 0xFF;
-    PORTA = 0xFF;
+    mpu6050_init();
     
-    int value = 0;
-    for (;;) {
-        serial_printf("Hello, world! %d\r\n", value);
-        value++;
-    }
+    uint16_t accel_x, accel_y, accel_z;
 
-    return 0;
+    for (;;) 
+    {
+        accel_x = mpu6050_read_accel_x();
+        accel_y = mpu6050_read_accel_y();
+        accel_z = mpu6050_read_accel_z();
+
+        serial_printf("accel_x: %+6d, accel_y: %+6d, accel_z: %+6d\r", accel_x, accel_y, accel_z);
+
+        _delay_ms(10);
+    }
 }
