@@ -13,7 +13,7 @@
  * PB6: ENB(PWM, OC1B)
  */
 
-inline void motor_set_direction(int motor, int forward) {
+void motor_set_direction(int motor, int forward) {
     if (motor == MOTOR_LEFT) {
         if (forward) {
             PORTA |= (1 << PA0);
@@ -33,11 +33,19 @@ inline void motor_set_direction(int motor, int forward) {
     }
 }
 
-inline void motor_set_speed(int motor, int speed) {
+void motor_set_speed(int motor, int speed) {
     if (motor == MOTOR_LEFT) {
         OCR1A = speed;
     } else if (motor == MOTOR_RIGHT) {
         OCR1B = speed;
+    }
+}
+
+void motor_control_enabled(int enabled) {
+    if (enabled) {
+        TIMSK |= (1 << OCIE0); // enable timer0 compare match interrupt
+    } else {
+        TIMSK &= ~(1 << OCIE0); // disable timer0 compare match interrupt
     }
 }
 
@@ -59,4 +67,12 @@ void motor_init() {
 
     // set initial direction to none
     PORTA &= ~((1 << PA0) | (1 << PA1) | (1 << PA2) | (1 << PA3));
+
+    // timer0 for motor control
+    TCCR0 |= (1 << WGM01); // CTC(Clear Timer on Compare match) mode
+    TCCR0 |= (1 << CS02); // prescaler 64
+    // calculate OCR0 for 500us
+    // 500us = OCR0 * 1 / (clk / prescaler)
+    // OCR0 = 500us * (clk / prescaler) = 500us * (16MHz / 64) = 125
+    OCR0 = 125;
 }

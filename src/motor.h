@@ -7,5 +7,11 @@
 void motor_init();
 void motor_set_direction(int motor, int forward);
 void motor_set_speed(int motor, int speed);
+void motor_control_enabled(int enabled);
+
+/**
+ * For motor control, we use timer0 compare match interrupt.
+ */
+#define MOTOR_CONTROL_IRQ   TIMER0_COMP_vect
 
 #endif
