@@ -1,4 +1,5 @@
 #include "motor.h"
+#include <math.h>
 
 #include "avr/io.h"
 #include "avr/iom128.h"
@@ -33,11 +34,25 @@ void motor_set_direction(int motor, int forward) {
     }
 }
 
-void motor_set_speed(int motor, int speed) {
+#define ABS(x) ((x) < 0 ? -(x) : (x))
+
+void motor_set_duty_ratio(int motor, float duty_ratio) {
+    float speed = ABS(duty_ratio * 255.f);
+
+    if (speed < 20.f) {
+        speed = 7.5f * speed;
+    } else {
+        speed = 150.f + speed;
+    }
+
+    if (speed > 255.f) {
+        speed = 255.f;
+    }
+
     if (motor == MOTOR_LEFT) {
-        OCR1A = speed;
+        OCR1A = (uint8_t)speed;
     } else if (motor == MOTOR_RIGHT) {
-        OCR1B = speed;
+        OCR1B = (uint8_t)speed;
     }
 }
 

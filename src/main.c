@@ -16,15 +16,24 @@
 #define FALSE   0
 
 volatile float accel_y;
+volatile float prev_error;
 
 SIGNAL(MOTOR_CONTROL_IRQ) {
     static const float dt = 0.0005f; // interrupt for every 500us
-    static const float kp = 20.f; // proportional gain
+    static const float kp = 0.03f; // proportional gain
+    static const float kd = 0.02f; // derivative gain
 
-    motor_set_direction(MOTOR_LEFT, accel_y < 0);
-    motor_set_direction(MOTOR_RIGHT, accel_y < 0);
-    motor_set_speed(MOTOR_LEFT, ABS(accel_y) * kp);
-    motor_set_speed(MOTOR_RIGHT, ABS(accel_y) * kp);
+    float error = accel_y;
+    float error_diff = (error - prev_error) * dt;
+
+    float duty_ratio = kp * error + kd * error_diff;
+
+    motor_set_direction(MOTOR_LEFT, duty_ratio < 0);
+    motor_set_direction(MOTOR_RIGHT, duty_ratio < 0);
+    motor_set_duty_ratio(MOTOR_LEFT, duty_ratio);
+    motor_set_duty_ratio(MOTOR_RIGHT, duty_ratio);
+
+    prev_error = error;
 }
 
 int main(void)

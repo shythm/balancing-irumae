@@ -6,8 +6,8 @@
 
 void motor_init();
 void motor_set_direction(int motor, int forward);
-void motor_set_speed(int motor, int speed);
 void motor_control_enabled(int enabled);
+void motor_set_duty_ratio(int motor, float duty_ratio);
 
 /**
  * For motor control, we use timer0 compare match interrupt.
