@@ -45,10 +45,10 @@ void motor_set_duty_ratio(int motor, float duty_ratio) {
     // map duty_ratio[0, 1] to [MOTOR_MIN_POWER, 255]
     uint16_t power = (255 - MOTOR_MIN_POWER) * duty_ratio + MOTOR_MIN_POWER;
 
-    if (power < 0) {
+    if (power < MOTOR_MIN_POWER + MOTOR_DEAD_POWER) {
         power = 0;
-    } else if (power > 255) {
-        power = 255;
+    } else if (power > MOTOR_MAX_POWER) {
+        power = MOTOR_MAX_POWER;
     }
 
     if (motor == MOTOR_LEFT) {
@@ -87,9 +87,9 @@ void motor_init() {
 
     // timer0 for motor control
     TCCR0 |= (1 << WGM01); // CTC(Clear Timer on Compare match) mode
-    TCCR0 |= (1 << CS02); // prescaler 64
-    // calculate OCR0 for 500us
-    // 500us = OCR0 * 1 / (clk / prescaler)
-    // OCR0 = 500us * (clk / prescaler) = 500us * (16MHz / 64) = 125
+    TCCR0 |= ((1 << CS02) | 1 << (CS01) | 1 << (CS00)); // prescaler 1024
+    // calculate OCR0 for 8ms
+    // 8ms = OCR0 * 1 / (clk / prescaler)
+    // OCR0 = 0.008s * (clk / prescaler) = 0.008s * (16MHz / 1024) = 125
     OCR0 = 125;
 }

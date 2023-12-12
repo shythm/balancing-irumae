@@ -17,6 +17,8 @@ void motor_set_duty_ratio(int motor, float duty_ratio);
 /**
  * Minimum power for motor to move.
  */
-#define MOTOR_MIN_POWER 110
+#define MOTOR_MIN_POWER     130
+#define MOTOR_MAX_POWER     240
+#define MOTOR_DEAD_POWER    2
 
 #endif
