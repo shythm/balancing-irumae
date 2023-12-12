@@ -14,4 +14,9 @@ void motor_set_duty_ratio(int motor, float duty_ratio);
  */
 #define MOTOR_CONTROL_IRQ   TIMER0_COMP_vect
 
+/**
+ * Minimum power for motor to move.
+ */
+#define MOTOR_MIN_POWER 110
+
 #endif

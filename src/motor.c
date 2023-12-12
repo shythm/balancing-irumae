@@ -1,4 +1,5 @@
 #include "motor.h"
+#include <stdlib.h>
 #include <math.h>
 
 #include "avr/io.h"
@@ -34,25 +35,26 @@ void motor_set_direction(int motor, int forward) {
     }
 }
 
-#define ABS(x) ((x) < 0 ? -(x) : (x))
-
 void motor_set_duty_ratio(int motor, float duty_ratio) {
-    float speed = ABS(duty_ratio * 255.f);
-
-    if (speed < 20.f) {
-        speed = 7.5f * speed;
-    } else {
-        speed = 150.f + speed;
+    duty_ratio = fabsf(duty_ratio);
+    // limit duty_ratio to [0, 1]
+    if (duty_ratio > 1.0f) {
+        duty_ratio = 1.0f;
     }
 
-    if (speed > 255.f) {
-        speed = 255.f;
+    // map duty_ratio[0, 1] to [MOTOR_MIN_POWER, 255]
+    uint16_t power = (255 - MOTOR_MIN_POWER) * duty_ratio + MOTOR_MIN_POWER;
+
+    if (power < 0) {
+        power = 0;
+    } else if (power > 255) {
+        power = 255;
     }
 
     if (motor == MOTOR_LEFT) {
-        OCR1A = (uint8_t)speed;
+        OCR1A = (uint8_t)power;
     } else if (motor == MOTOR_RIGHT) {
-        OCR1B = (uint8_t)speed;
+        OCR1B = (uint8_t)power;
     }
 }
 
