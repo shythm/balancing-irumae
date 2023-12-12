@@ -74,7 +74,7 @@ int16_t mpu6050_burst_read_sequence(uint8_t reg);
 #endif
 
 #define MPU6050_GET_ACCEL(reg) \
-    (mpu6050_burst_read_sequence(reg) / MPU6050_ACC_LSB_SENSITIVITY * 9.80665f)
+    (mpu6050_burst_read_sequence(reg) / MPU6050_ACC_LSB_SENSITIVITY)
 
 /**
  * @brief Get the x-axis acceleration.
