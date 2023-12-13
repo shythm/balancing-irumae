@@ -7,12 +7,12 @@
 #include "avr/iom128.h"
 #include "avr/interrupt.h"
 
-volatile angle_get_data_t _angle_get_data;
-volatile float _angle;
+angle_get_data_t _angle_get_data;
+float _angle;
 
 #define ANGLE_IRQ_PERIOD        0.004f
-#define ANGLE_STD_DEV_OF_GYRO   6
-#define ANGLE_STD_DEV_OF_ACCEL  8
+#define ANGLE_STD_DEV_OF_GYRO   4
+#define ANGLE_STD_DEV_OF_ACCEL  3
 
 SIGNAL(TIMER2_COMP_vect) {
     static float theta_gyro;

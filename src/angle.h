@@ -9,8 +9,6 @@
 #ifndef __ANGLE_H__
 #define __ANGLE_H__
 
-#include "mpu6050.h"
-
 typedef struct {
     float x;
     float y;
@@ -26,7 +24,7 @@ typedef struct {
 // callback function to get accel, gyro data
 typedef void (*angle_get_data_t)(angle_accel_t *accel, angle_gyro_t *gyro, int urgent);
 
-extern volatile float _angle;
+extern float _angle;
 static inline float angle_retrieve() {
     return _angle;
 }
