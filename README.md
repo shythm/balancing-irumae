@@ -14,6 +14,9 @@ ATmega128을 이용한 이루매 ~~밸런싱~~ **인사하는** 인형 로봇
   - [플라스틱 타공 로봇프레임 150mm](https://www.devicemart.co.kr/goods/view?no=1342467)
   - 3T 포맥스
 
+- 유용한 문서
+  - [Mac에서 AVR 마이크로프로세서 개발 환경 구축하기](./docs/build-environment-on-mac.md)
+
 ## Develop Log
 
 - 2023.11.16. JKIT-128-1 개발 보드에 대한 개발 환경을 구축했다.
