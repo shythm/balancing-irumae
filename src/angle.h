@@ -1,9 +1,7 @@
 /**
  * @file angle.h
- * @author Seongho Lee (shythm@outlook.com)
- * @brief Angle measurement using MPU6050 with Kalman filter
- * @version 0.1
- * @date 2023-12-12
+ * @author Seongho Lee
+ * @brief Angle measurement using gyro/accelerometer with Kalman filter
  * 
  * @details
  * [ Operation Flow ]
@@ -11,7 +9,6 @@
  * 2. call angle_enabled(TRUE) to enable angle measurement
  *    -> then, timer2 interrupt will calculate angle every cycle
  * 3. call angle_retrieve() to get angle in degree
- * 
  */
 
 #ifndef __ANGLE_H__

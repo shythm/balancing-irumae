@@ -1,9 +1,7 @@
 /**
  * @file angle.c
- * @author Seongho Lee (shythm@outlook.com)
- * @brief Angle measurement using MPU6050 with Kalman filter
- * @version 0.1
- * @date 2023-12-12
+ * @author Seongho Lee
+ * @brief Angle measurement using gyro/accelerometer with Kalman filter
  */
 
 #include "angle.h"
