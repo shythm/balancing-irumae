@@ -15,23 +15,23 @@
 #define TRUE    1
 #define FALSE   0
 
-volatile float error;
-volatile float prev_error;
+float error;
+float prev_error;
 
 SIGNAL(MOTOR_CONTROL_IRQ) {
     PORTC |= (1 << PC1); // for debugging
 
     static const float dt = 0.008f; // 8ms
     static const float kp = 0.008f; // proportional gain
-    static const float kd = 0.003f; // derivative gain
-    static const float ki = 0.000f; // integral gain
+    static const float kd = 0.001f; // derivative gain
+    static const float ki = 0.001f; // integral gain
 
     static float error_sum = 0.0f;
 
     float error = angle_retrieve();
     float error_diff = (error - prev_error) * dt;
     error_sum += error * dt;
-    if (error_sum > 250.f) error_sum = 250.f;
+    if (error_sum > 100.f) error_sum = 100.f;
 
     float duty_ratio = kp * error + kd * error_diff + ki * error_sum;
 
@@ -74,6 +74,6 @@ int main(void) {
 
     for (;;) {
         angle_get_data(NULL, NULL, FALSE);
-        serial_printf("angle: %+2.4f\r\n", angle_retrieve());
+        serial_printf("bottom:-30,angle:%2.4f,top:30\r\n", angle_retrieve());
     }
 }
