@@ -11,6 +11,11 @@ ATmega128을 이용한 이루매 밸런싱 인형 로봇
   - [serial.c](./src/serial.c), [serial.h](./src/serial.h)
 - 2023.11.16. JKIT-128-1 개발 보드에 대한 개발 환경을 구축했다.
   - [Makefile](./build/Makefile)
+- 2023.12.06. L298N 모터 드라이버를 이용하여 DC 모터의 전류를 PWM으로 제어하는데 성공했다. Timer 1의 8bit Fast PWM 모드 사용.
+  - [motor.c](./src/motor.c), [motor.h](./src/motor.h)
+- 2023.12.07. PID 제어를 위한 코드를 작성했다. Timer 0의 8bit CTC 모드를 사용하여 매 주기마다 제어를 수행할 수 있도록 했다. 우선 P제어만 시도하였고, I 및 D 제어도 해당 인터럽트를 이용하여 구현할 예정이다.
+- 2023.12.13. Kalman Filter를 이용하여 각속도 센서의 노이즈를 제거하고, 각도를 추정하는데 성공했다.
+  - [angle.c](./src/angle.c), [angle.h](./src/angle.h)
 
 ## Trial and Error
 
