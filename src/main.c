@@ -15,11 +15,8 @@
 #define TRUE    1
 #define FALSE   0
 
-float error;
-float prev_error;
-
 SIGNAL(MOTOR_CONTROL_IRQ) {
-    PORTC |= (1 << PC1); // for debugging
+    PORTC |= (1 << PC1); // for debugging(measure the time of the interrupt)
 
     static const float dt = 0.008f; // 8ms
     static const float kp = 0.008f; // proportional gain
@@ -27,11 +24,12 @@ SIGNAL(MOTOR_CONTROL_IRQ) {
     static const float ki = 0.001f; // integral gain
 
     static float error_sum = 0.0f;
+    static float prev_error = 0.0f;
 
-    float error = angle_retrieve();
-    float error_diff = (error - prev_error) * dt;
-    error_sum += error * dt;
-    if (error_sum > 100.f) error_sum = 100.f;
+    float error = angle_retrieve(); // for p term
+    float error_diff = (error - prev_error) * dt; // for d term
+    error_sum += error * dt; // for i term
+    if (error_sum > 100.f) error_sum = 100.f; // anti-windup
 
     float duty_ratio = kp * error + kd * error_diff + ki * error_sum;
 
@@ -50,12 +48,15 @@ void angle_get_data(angle_accel_t *accel, angle_gyro_t *gyro, int urgent) {
     static angle_gyro_t _gyro;
 
     if (!urgent) {
+        // if not urgent, get accel and gyro data from mpu6050 by polling.
+        // it takes many time to get data using twi(i2c).
         _accel.x = mpu6050_get_accel_x();
         _accel.y = mpu6050_get_accel_y();
         _accel.z = mpu6050_get_accel_z();
         _gyro.x = mpu6050_get_gyro_x();
     }
 
+    // using static variables, return the latest data(urgent or not).
     if (accel) *accel = _accel;
     if (gyro) *gyro = _gyro;
 }
@@ -73,7 +74,7 @@ int main(void) {
     motor_control_enabled(TRUE);
 
     for (;;) {
-        angle_get_data(NULL, NULL, FALSE);
+        angle_get_data(NULL, NULL, FALSE); // update gyro/accel data
         serial_printf("bottom:-30,angle:%2.4f,top:30\r\n", angle_retrieve());
     }
 }
