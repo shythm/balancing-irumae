@@ -1,3 +1,14 @@
+/**
+ * @file serial.c
+ * @author Seongho Lee
+ * @brief This module performs to print formatted serial output
+ * 
+ * @details
+ * 1. using the UART0, initialize the UART to communicate with the serial monitor
+ *    (such as minicom, arduino serial monitor, ...).
+ * 2. prints a formatted string using vsprintf in stdio.h
+ */
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <avr/io.h>
