@@ -25,7 +25,7 @@ ATmega128을 이용한 이루매 ~~밸런싱~~ **인사하는** 인형 로봇
 - 2023.11.19. MPU6050으로 얻은 가속도와 각속도 RAW 값을 실제 물리량으로 변환하는데 성공했다.
 - 2023.12.06. L298N 모터 드라이버를 이용하여 DC 모터의 전류를 PWM으로 제어하는데 성공했다. Timer 1의 8bit Fast PWM 모드 사용.
   - [motor.c](./src/motor.c), [motor.h](./src/motor.h)
-- 2023.12.07. PID 제어를 위한 코드를 작성했다. Timer 0의 8bit CTC 모드를 사용하여 매 주기마다 제어를 수행할 수 있도록 했다. 우선 P제어만 시도하였고, I 및 D 제어도 해당 인터럽트를 이용하여 구현할 예정이다.
+- 2023.12.07. PID 제어를 위한 코드를 작성했다. Timer 0의 8bit CTC 모드를 사용하여 매 주기마다 제어를 수행할 수 있도록 했다. 우선 P제어만 시도하였고, I 및 D 제어도 해당 인터럽트를 이용하여 구현해야 한다.
 - 2023.12.13. Kalman Filter를 이용하여 각속도 센서의 노이즈를 제거하고, 각도를 추정하는데 성공했다.
   - [angle.c](./src/angle.c), [angle.h](./src/angle.h)
 
@@ -34,16 +34,16 @@ ATmega128을 이용한 이루매 ~~밸런싱~~ **인사하는** 인형 로봇
 각기 다른 루틴들이 독립적으로 수행되면서 로봇이 밸런싱을 하게 된다.
 
 - MPU6050 TWI(I2C) Polling
-  - [main.c](./src/main.c)에서 무한 루프를 돌면서 MPU6050으로부터 가속도, 각속도 값을 읽어온다. 이때 MPU6050로부터 I2C 통신을 통해 내부 레지스터의 값을 읽어오며, 이를 모듈화한 [mpu6050.c](./src/mpu6050.c)의 `mpu6050_get_accel` 및 `mpu6050_get_gyro` 계열 함수를 이용한다.
+  - [main.c](./src/main.c)에서 무한 루프를 돌면서 MPU6050으로부터 가속도, 각속도 값을 읽어온다. 이때 MPU6050로부터 I2C 통신을 통해 내부 레지스터의 값을 읽어오며, 이를 모듈화한 [mpu6050.h](./src/mpu6050.h)의 `mpu6050_get_accel` 및 `mpu6050_get_gyro` 계열 함수를 이용한다.
   - TWI(I2C) 통신은 [i2c.h](./src/i2c.h)로 모듈화 하였으며, 상태 레지스터를 검사하는데 polling 방식을 이용한다.
 - PID Control Timer 0 Interrupt
   - [motor.c](./src/motor.c)에서 DC 모터 제어를 위해 Timer 0을 8bit CTC(Clear Timer on Compare match) 모드로 초기화한다.
-  - 매 주기마다 인터럽트가 발생하며, PID 제어를 수행해야 한다. PID 제어 인터럽트 핸들러는 [main.c](./src/main.c)에 정의되어 있다(`SIGNAL(MOTOR_CONTROL_IRQ)`).
+  - 매 주기마다 인터럽트가 발생하며, 이때 PID 제어를 수행해야 한다. PID 제어 인터럽트 핸들러는 [main.c](./src/main.c)에 정의되어 있다(`SIGNAL(MOTOR_CONTROL_IRQ)`).
 - PWM Control using Timer 1
   - PID 제어를 통해 얻은 좌우 DC 모터의 PWM duty ratio를 Timer 1의 8bit Fast PWM 모드를 이용하여 제어한다([motor.c](./src/motor.c)의 `motor_set_duty_ratio` 함수).
-  - GPIO output mode를 이용하여 PWM duty ratio의 부호에 따라 모터의 회전 방향 또한 결정한다([motor.c](./src/motor.c)의 `motor_set_direction` 함수).
+  - GPIO output 모드를 이용하여 PWM duty ratio의 부호에 따라 모터의 회전 방향 또한 결정한다([motor.c](./src/motor.c)의 `motor_set_direction` 함수).
 - Kalman Filter Timer 2 Interrupt
-  - [angle.c](./src/angle.c)에서 외부(여기서는 [main.c](./src/main.c)의 `angle_get_data` 콜백 함수)로부터 전달 받은 가속도, 각속도 값을 이용하여 Kalman Filter를 수행한다.
+  - [angle.c](./src/angle.c)에서 외부(여기서는 [main.c](./src/main.c)의 `angle_get_data` 콜백 함수)로부터 전달 받은 가속도, 각속도 값을 이용하여 Kalman Filter 계산을 수행한다.
   - 외부로부터 전달 받을 가속도, 각속도 값은 콜백 함수 형태로 `angle_init` 함수의 인자로 전달받는다.
   - Timer 2의 8bit CTC 모드로 매 주기마다 Kalman Filter를 수행하여 pitch 각도를 추정한다.
 
@@ -63,13 +63,13 @@ ATmega128을 이용한 이루매 ~~밸런싱~~ **인사하는** 인형 로봇
 
 - MPU6050 레지스터를 읽고 나면 Start I2C Condition에서 블락되는 문제 발생 및 해결.
   - 상황 및 문제
-    - 0x3B(ACCEL_XOUT_H) 레지스터를 지정하고 이후 6바이트를 연속적으로 읽는 코드를 작성함.
-    - 이를 통해 다음에 있는 Y축, Z축에 대한 가속도를 연속적으로 읽으려 했었음.
+    - `0x3B(ACCEL_XOUT_H)` 레지스터를 지정하고 이후 6바이트를 연속적으로 읽는 코드를 작성함.
+    - 이를 통해 X축, Y축, Z축에 대한 가속도를 연속적으로 읽으려 했었음.
     - 이렇게 한번 읽고 나서, 다음에 또 읽을 때 Start I2C Condition에서 블락이 되는 문제 발생.
   - 디버깅
     - I2C 통신하는 각 시퀀스 곳곳에 디버깅 코드(uart 출력 코드)를 넣어 어디서 블락이 되는지 확인.
     - MPU6050 데이터 시트 및 레지스터 맵 확인
-    - 예제 코드를 살펴보며 나의 코드와 무엇이 다른지 확인 -> 다른 코드들은 X, Y, Z축 하나씩 읽는데 나만 한번에 읽음.
+    - 예제 코드를 살펴보며 나의 코드와 무엇이 다른지 확인 → 다른 코드들은 X, Y, Z축 하나씩 읽는데 나만 한번에 읽음.
   - 해결
     - MPU6050 Datasheet 9.3 I2C Communications Protocol 참조.
     - Single-Byte Read Sequence와 Burst Read Sequence 경우가 존재하는데, 전자는 1바이트 하나만 읽을 때이고, 후자는 2바이트를 연속으로 읽을 때의 시퀀스를 설명하고 있음.
