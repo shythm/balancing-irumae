@@ -1,3 +1,11 @@
+/**
+ * @file angle.c
+ * @author Seongho Lee (shythm@outlook.com)
+ * @brief Angle measurement using MPU6050 with Kalman filter
+ * @version 0.1
+ * @date 2023-12-12
+ */
+
 #include "angle.h"
 
 #include <stdlib.h>
@@ -7,7 +15,10 @@
 #include "avr/iom128.h"
 #include "avr/interrupt.h"
 
-angle_get_data_t _angle_get_data;
+// callback function to retreive data from MPU6050
+volatile angle_get_data_t _angle_get_data = NULL;
+
+// angle in degree
 float _angle;
 
 #define ANGLE_IRQ_PERIOD        0.004f
@@ -20,8 +31,14 @@ SIGNAL(TIMER2_COMP_vect) {
 
     angle_accel_t accel;
     angle_gyro_t gyro;
-    _angle_get_data(&accel, &gyro, 1);
 
+    if (_angle_get_data) {
+        // the data will be updated externally with urgent flag 0
+        // we just get existing data not to wait for new data from MPU6050 with urgent flag 1
+        _angle_get_data(&accel, &gyro, 1);
+    }
+
+    // adjust accelerometer data
     float accel_x = accel.x - 0.05f;
     float accel_y = accel.y + 0.01f;
     float accel_z = accel.z + 0.01f;
@@ -54,11 +71,12 @@ void angle_init(angle_get_data_t callback) {
     // timer2 for measurement angle
     TCCR2 |= (1 << WGM21); // CTC mode
     TCCR2 |= (1 << CS22);  // prescaler 256
-    // calculate OCR2 for 5ms
+    // calculate OCR2 for 4ms
     // 4ms = OCR2 * 1 / (clk / prescaler)
     // OCR2 = 4ms * (clk / prescaler) = 4ms * (16MHz / 256) = 250
     OCR2 = 250;
 
+    // regist callback function to retrieve data from MPU6050
     _angle_get_data = callback;
 }
 
