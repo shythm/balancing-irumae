@@ -1,13 +1,15 @@
 /**
  * @file i2c.h
+ * @author Seongho Lee
  * @brief Header file for I2C communication functions.
  * 
+ * @details
  * This file contains macros and inline functions for I2C communication
  * using the TWI (Two-Wire Interface) module in ATmega128.
  */
 
-#ifndef I2C_H
-#define I2C_H
+#ifndef __I2C_H__
+#define __I2C_H__
 
 #include <avr/io.h>
 #include <avr/iom128.h>
@@ -74,4 +76,4 @@ static inline uint8_t i2c_read(int ack) {
     return TWDR; // Read data from TWDR register
 }
 
-#endif // I2C_H
+#endif // __I2C_H__

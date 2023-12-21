@@ -1,8 +1,7 @@
 /**
  * @file mpu6050.c
- * @author Seongho Lee (shythm@outlook.com)
+ * @author Seongho Lee
  * @brief MPU6050 sensor driver
- * @date 2023-11-18
  */
 
 #include "mpu6050.h"

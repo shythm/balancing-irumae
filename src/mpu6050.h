@@ -1,12 +1,11 @@
 /**
  * @file mpu6050.h
- * @author Seongho Lee (shythm@outlook.com)
+ * @author Seongho Lee
  * @brief MPU6050 sensor driver
- * @date 2023-11-18
  */
 
-#ifndef MPU6050_H
-#define MPU6050_H
+#ifndef __MPU6050_H__
+#define __MPU6050_H__
 
 #include <stdint.h>
 
@@ -127,4 +126,4 @@ static inline float mpu6050_get_gyro_z() {
     return MPU6050_GET_GYRO(MPU6050_REG_GYRO_ZOUT_H);
 }
 
-#endif // MPU6050_H
+#endif // __MPU6050_H__
