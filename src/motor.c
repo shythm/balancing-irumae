@@ -1,12 +1,10 @@
-#include "motor.h"
-#include <stdlib.h>
-#include <math.h>
-
-#include "avr/io.h"
-#include "avr/iom128.h"
-
-/** 
- * L298N Motor Driver Pinout
+/**
+ * @file motor.c
+ * @author Seongho Lee
+ * @brief This module controls the motors with L298N motor driver.
+ * 
+ * @details
+ * [ L298N Motor Driver Pinout ]
  * PA0: IN1
  * PA1: IN2
  * PB5: ENA(PWM, OC1A)
@@ -14,6 +12,13 @@
  * PA3: IN4
  * PB6: ENB(PWM, OC1B)
  */
+
+#include "motor.h"
+#include <stdlib.h>
+#include <math.h>
+
+#include "avr/io.h"
+#include "avr/iom128.h"
 
 void motor_set_direction(int motor, int forward) {
     if (motor == MOTOR_LEFT) {
@@ -34,6 +39,13 @@ void motor_set_direction(int motor, int forward) {
         }
     }
 }
+
+/**
+ * Minimum power for motor to move.
+ */
+#define MOTOR_MIN_POWER     120
+#define MOTOR_MAX_POWER     255
+#define MOTOR_DEAD_POWER    10
 
 void motor_set_duty_ratio(int motor, float duty_ratio) {
     duty_ratio = fabsf(duty_ratio);

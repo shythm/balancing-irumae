@@ -1,3 +1,9 @@
+/**
+ * @file motor.h
+ * @author Seongho Lee
+ * @brief This module controls the motors with L298N motor driver.
+ */
+
 #ifndef __MOTOR_H__
 #define __MOTOR_H__
 
@@ -13,12 +19,5 @@ void motor_set_duty_ratio(int motor, float duty_ratio);
  * For motor control, we use timer0 compare match interrupt.
  */
 #define MOTOR_CONTROL_IRQ   TIMER0_COMP_vect
-
-/**
- * Minimum power for motor to move.
- */
-#define MOTOR_MIN_POWER     120
-#define MOTOR_MAX_POWER     255
-#define MOTOR_DEAD_POWER    10
 
 #endif
